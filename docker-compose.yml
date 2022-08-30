@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  php:
+    container_name: architech-client-php
+    image: architechlabs/php
+    user: ${UID}:${GID}
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ~/.ssh:/home/dev/.ssh
