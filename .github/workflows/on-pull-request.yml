@@ -1,0 +1,80 @@
+name: Check PR
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+
+    - name: Cache vendor
+      uses: actions/cache@v3
+      with:
+        path: vendor/
+        key: vendor-${{ hashFiles('**/composer.lock') }}
+
+    - name: Install dependencies
+      run: composer install
+
+  phpunit:
+    needs: setup
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache vendor
+        uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit test/
+
+  phpstan:
+    needs: setup
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache vendor
+        uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse 
+          --level 8 
+          --configuration vendor/leverage-php/toolchain/conf/phpstan.neon
+          src/ test/
+
+  phpcsfixer:
+    needs: setup
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache vendor
+        uses: actions/cache@v3
+        with:
+          path: vendor/
+          key: vendor-${{ hashFiles('**/composer.lock') }}
+
+      - name: CS Fixer
+        run: vendor/bin/php-cs-fixer fix
+          --config vendor/leverage-php/toolchain/conf/.php-cs-fixer.php
+          --diff
+          --dry-run
+          src/ test/
