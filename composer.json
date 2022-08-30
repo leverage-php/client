@@ -1,0 +1,23 @@
+{
+    "name": "leverage-php/client",
+    "description": "HTTP clients for common scenarios.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Leverage\\Client\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andy Fletcher"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "7.*",
+        "leverage-php/encoder": "1.*"
+    },
+    "require-dev": {
+        "leverage-php/toolchain": "1.*"
+    }
+}
